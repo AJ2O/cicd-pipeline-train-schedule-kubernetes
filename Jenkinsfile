@@ -2,16 +2,16 @@ pipeline {
     agent any
     environment {
         //be sure to replace "willbla" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "willbla/train-schedule"
+        DOCKER_IMAGE_NAME = "aobatolu/train-schedule2"
     }
     stages {
-        stage('Build') {
-            steps {
-                echo 'Running build automation'
-                sh './gradlew build --no-daemon'
-                archiveArtifacts artifacts: 'dist/trainSchedule.zip'
-            }
-        }
+        //stage('Build') {
+        //    steps {
+        //        echo 'Running build automation'
+        //        sh './gradlew build --no-daemon'
+        //        archiveArtifacts artifacts: 'dist/trainSchedule.zip'
+        //    }
+        //}
         stage('Build Docker Image') {
             when {
                 branch 'master'
@@ -46,6 +46,11 @@ pipeline {
                 input 'Deploy to Production?'
                 milestone(1)
                 //implement Kubernetes deployment here
+                kubernetesDeploy(
+                    configs: 'train-schedule.yml',
+                    enableConfigSubstitution: true,
+                    kubeconfigId: 'kubeconfig'
+                )
             }
         }
     }
